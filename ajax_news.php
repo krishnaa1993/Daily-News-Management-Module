@@ -10,7 +10,6 @@ if($action=='fetch'){
     $limit = 5;
     $offset = ($page - 1) * $limit;
 
-    // Count total records
     $count_query = "SELECT COUNT(*) as total FROM daily_news 
                     WHERE (News_Title LIKE '%$search%' OR Category LIKE '%$search%')";
     if($status != '') $count_query .= " AND Status='$status'";
@@ -18,7 +17,6 @@ if($action=='fetch'){
     $total_row = $total_res->fetch_assoc();
     $total_pages = ceil($total_row['total'] / $limit);
 
-    // Fetch records
     $query = "SELECT * FROM daily_news 
               WHERE (News_Title LIKE '%$search%' OR Category LIKE '%$search%')";
     if($status != '') $query .= " AND Status='$status'";
@@ -31,7 +29,13 @@ if($action=='fetch'){
         <th>Title</th>
         <th>Category</th>
         <th>Date</th>
+        <th>Created On</th>
+        <th>Region</th>
+        <th>Language</th>
+        <th>City</th>
+        <th>Country</th>
         <th>Status</th>
+        <th>Created By</th>
         <th>Updated By</th>
         <th>Updated On</th>
         <th>IsActive</th>
@@ -40,12 +44,19 @@ if($action=='fetch'){
 
     while($row=$res->fetch_assoc()){
         $img = $row['News_Banner_Image'] ? "<div class='news-image-container'><img src='assets/uploads/".$row['News_Banner_Image']."'></div>" : '';
+        
         echo '<tr>
             <td>'.$img.'</td>
             <td>'.$row['News_Title'].'</td>
             <td>'.$row['Category'].'</td>
             <td>'.$row['News_Date'].'</td>
+            <td>'.$row['CreatedOn'].'</td>
+            <td>'.$row['Region'].'</td>
+            <td>'.$row['Language'].'</td>
+            <td>'.$row['City'].'</td>
+            <td>'.$row['Country'].'</td>
             <td>'.$row['Status'].'</td>
+            <td>'.$row['Created_By'].'</td>
             <td>'.$row['UpdatedBy'].'</td>
             <td>'.$row['UpdatedOn'].'</td>
             <td>'.($row['IsActive'] ? 'Yes' : 'No').'</td>
@@ -62,7 +73,9 @@ if($action=='fetch'){
                     data-city="'.htmlspecialchars($row['City']).'"
                     data-country="'.htmlspecialchars($row['Country']).'"
                     data-date="'.$row['News_Date'].'"
+                    data-createdon="'.$row['CreatedOn'].'"
                     data-status="'.$row['Status'].'"
+                    data-createdby="'.htmlspecialchars($row['Created_By']).'"
                     data-updatedby="'.htmlspecialchars($row['UpdatedBy']).'"
                     data-updatedon="'.$row['UpdatedOn'].'"
                     data-isactive="'.$row['IsActive'].'"
@@ -72,7 +85,6 @@ if($action=='fetch'){
     }
     echo '</table>';
 
-    // Pagination
     echo '<nav><ul class="pagination">';
     if($page > 1) echo '<li class="page-item"><a class="page-link" href="#" data-page="'.($page-1).'">Previous</a></li>';
     for($i=1; $i<=$total_pages; $i++){
@@ -83,7 +95,6 @@ if($action=='fetch'){
     echo '</ul></nav>';
 }
 
-// Add or Update
 if($action=='add' || $action=='update'){
     $id = $_POST['News_Id'] ?? 0;
     $title = $_POST['News_Title'];
@@ -95,8 +106,14 @@ if($action=='add' || $action=='update'){
     $language = $_POST['Language'] ?? '';
     $city = $_POST['City'] ?? '';
     $country = $_POST['Country'] ?? '';
-    $updatedBy = 'Admin'; // Change dynamically as needed
-    $updatedOn = date('Y-m-d H:i:s');
+    $createdBy = $_POST['Created_By'] ?? '';
+    
+    if($action == 'add') {
+        $updatedBy = $_POST['Created_By'] ?? '';
+    } else {
+        $updatedBy = $_POST['Updated_By'] ?? '';
+    }
+    
     $isActive = $_POST['IsActive'] ?? 1;
 
     $fileName = '';
@@ -112,20 +129,19 @@ if($action=='add' || $action=='update'){
 
     if($action=='add'){
         $sql = "INSERT INTO daily_news 
-        (News_Title, News_Description, News_Banner_Image, Category, News_Date, Status, Region, Language, City, Country, UpdatedBy, UpdatedOn, IsActive)
-        VALUES ('$title','$desc','$fileName','$category','$date','$status','$region','$language','$city','$country','$updatedBy','$updatedOn','$isActive')";
+        (News_Title, News_Description, News_Banner_Image, Category, News_Date, Status, Region, Language, City, Country, Created_By, UpdatedBy, IsActive)
+        VALUES ('$title','$desc','$fileName','$category','$date','$status','$region','$language','$city','$country','$createdBy','No Updates','$isActive')";
         echo $conn->query($sql) ? 'News Added Successfully' : 'Error';
     } else {
         $sql = "UPDATE daily_news SET 
                 News_Title='$title', News_Description='$desc', Category='$category', News_Date='$date', Status='$status',
-                Region='$region', Language='$language', City='$city', Country='$country', UpdatedBy='$updatedBy', UpdatedOn='$updatedOn', IsActive='$isActive'";
+                Region='$region', Language='$language', City='$city', Country='$country', UpdatedBy='$updatedBy', IsActive='$isActive'";
         if($fileName) $sql .= ", News_Banner_Image='$fileName'";
         $sql .= " WHERE News_Id=$id";
         echo $conn->query($sql) ? 'News Updated Successfully' : 'Error';
     }
 }
 
-// Delete
 if($action=='delete'){
     $id = $_POST['id'];
     $conn->query("DELETE FROM daily_news WHERE News_Id=$id");
