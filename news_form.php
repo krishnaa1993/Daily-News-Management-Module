@@ -71,6 +71,18 @@ if($id){
     </div>
 
     <div class="mb-3">
+        <label>Created By</label>
+        <input type="text" name="Created_By" class="form-control" required placeholder="Enter creator name" value="<?php echo $news['Created_By'] ?? ''; ?>">
+    </div>
+
+ <?php if($id): ?>
+<div class="mb-3">
+    <label>Updated By</label>
+    <input type="text" name="Updated_By" class="form-control" required placeholder="Enter updater name" value="">
+</div>
+<?php endif; ?>
+
+    <div class="mb-3">
         <label>Status</label>
         <select name="Status" class="form-control">
             <option value="Active" <?php if(($news['Status'] ?? '')=='Active') echo 'selected'; ?>>Active</option>
