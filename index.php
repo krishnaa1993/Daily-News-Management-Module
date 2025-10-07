@@ -9,7 +9,6 @@
 <script src="assets/js/bootstrap.bundle.min.js"></script>
 
 <style>
-/* Image hover effect */
 .news-image-container {
     width: 100px;
     height: 60px;
@@ -33,6 +32,16 @@
     z-index: 999;
     box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
+
+/* BUTTON SPACING AND SAME SIZE */
+.btn {
+    margin-right: 5px;
+    margin-bottom: 3px;
+    min-width: 60px;
+}
+.btn:last-child {
+    margin-right: 0;
+}
 </style>
 </head>
 <body>
@@ -40,20 +49,16 @@
     <h2>Daily News Dashboard - Krishna Patil</h2>
     <a href="news_form.php" class="btn btn-primary mb-3">Add News</a>
     
-    <!-- Search -->
     <input type="text" id="search" placeholder="Search by Title or Category" class="form-control mb-3">
-    <!-- Status Filter -->
     <select id="status_filter" class="form-control mb-3">
         <option value="">All Status</option>
         <option value="Active">Active</option>
         <option value="Inactive">Inactive</option>
     </select>
 
-    <!-- News Table -->
     <div id="news_table"></div>
 </div>
 
-<!-- Read Modal -->
 <div class="modal fade" id="readModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -70,7 +75,9 @@
             <b>Language:</b> <span id="readLanguage"></span> |
             <b>City/Country:</b> <span id="readCity"></span>/<span id="readCountry"></span><br>
             <b>Date:</b> <span id="readDate"></span> |
+            <b>Created On:</b> <span id="readCreatedOn"></span> |
             <b>Status:</b> <span id="readStatus"></span> |
+            <b>Created By:</b> <span id="readCreatedBy"></span> |
             <b>Updated By:</b> <span id="readUpdatedBy"></span> |
             <b>Updated On:</b> <span id="readUpdatedOn"></span> |
             <b>IsActive:</b> <span id="readIsActive"></span>
@@ -116,7 +123,6 @@ $(document).ready(function(){
         }
     });
 
-    // Read Button Click
     $(document).on('click', '.read_news', function(){
         $('#readTitle').text($(this).data('title'));
         $('#readImage').attr('src','assets/uploads/'+$(this).data('img'));
@@ -127,7 +133,9 @@ $(document).ready(function(){
         $('#readCity').text($(this).data('city'));
         $('#readCountry').text($(this).data('country'));
         $('#readDate').text($(this).data('date'));
+        $('#readCreatedOn').text($(this).data('createdon'));
         $('#readStatus').text($(this).data('status'));
+        $('#readCreatedBy').text($(this).data('createdby'));
         $('#readUpdatedBy').text($(this).data('updatedby'));
         $('#readUpdatedOn').text($(this).data('updatedon'));
         $('#readIsActive').text($(this).data('isactive')==1?'Yes':'No');
@@ -135,5 +143,5 @@ $(document).ready(function(){
     });
 });
 </script>
-</body>
+</body> 
 </html>
